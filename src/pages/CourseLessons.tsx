@@ -4,6 +4,7 @@ import { ArrowLeft, BookOpen, Clock, CheckCircle2, Circle, ChevronRight, Graduat
 import Navbar from "@/components/Navbar";
 import { courses } from "@/data/courses";
 import LessonContent from "@/components/LessonContent";
+import AIChatPanel from "@/components/AIChatPanel";
 
 const CourseLessons = () => {
   const { courseId } = useParams<{ courseId: string }>();
@@ -44,6 +45,25 @@ const CourseLessons = () => {
 
   // Show full lesson content for quantum physics lesson 1
   const showLessonContent = course.id === "quantum-physics" && activeLesson === "1";
+
+  // Build context for AI chat
+  const lessonContext = showLessonContent
+    ? `Курс: ${course.name} (${course.subject}, ${course.grade})
+Текущий урок: Фотоэлектрический эффект и квантовая природа света
+Содержание урока:
+1. Фотоны — элементарные частицы света, порции энергии. Энергия кванта E = h·ν (h = 6.626·10⁻³⁴ Дж·с).
+2. Работа выхода (A_вых) — минимальная энергия для вылета электрона из металла.
+3. Уравнение Эйнштейна: hν = A_вых + mv²/2.
+4. Если энергия фотона < работы выхода, фотоэффект не происходит.
+5. Максимальная скорость электронов зависит от частоты (цвета) света, а не от яркости.
+6. Применения: солнечные панели, ночное видение.`
+    : `Курс: ${course.name} (${course.subject}, ${course.grade}). Ученик просматривает список уроков.`;
+
+  const progressText = `Пройдено ${completedLessons.size} из ${course.lessonList.length} уроков (${progress}%). Завершённые уроки: ${
+    completedLessons.size > 0
+      ? course.lessonList.filter((l) => completedLessons.has(l.id)).map((l) => l.title).join(", ")
+      : "нет"
+  }.`;
 
   return (
     <div className="min-h-screen bg-background font-sans">
@@ -155,6 +175,9 @@ const CourseLessons = () => {
           </div>
         )}
       </div>
+
+      {/* AI Chat */}
+      <AIChatPanel lessonContext={lessonContext} progress={progressText} />
     </div>
   );
 };
