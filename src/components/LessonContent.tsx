@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { CheckCircle2, Circle, Play } from "lucide-react";
 import { CheckCircle2, Circle, Play } from "lucide-react";
 import LimitLesson from "./lesson/LimitLesson";
 import DerivativeLesson from "./lesson/DerivativeLesson";
