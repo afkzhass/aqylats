@@ -1,28 +1,7 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { BookOpen, GraduationCap, ArrowRight } from "lucide-react";
-
-const subjects = ["Все", "Математика", "Физика", "История", "Қазақ тілі", "Биология", "Химия"] as const;
-
-type Subject = (typeof subjects)[number];
-
-interface Course {
-  name: string;
-  subject: Exclude<Subject, "Все">;
-  grade: string;
-  lessons: number;
-  emoji: string;
-  gradient: string;
-  badgeColor: string;
-}
-
-const courses: Course[] = [
-  { name: "Алгебра и начала анализа", subject: "Математика", grade: "11 кл", lessons: 24, emoji: "📐", gradient: "from-blue-100 to-blue-200", badgeColor: "bg-blue-100 text-blue-700" },
-  { name: "Квантовая физика", subject: "Физика", grade: "11 кл", lessons: 18, emoji: "⚛️", gradient: "from-green-100 to-green-200", badgeColor: "bg-green-100 text-green-700" },
-  { name: "Казахстан в XX веке", subject: "История", grade: "11 кл", lessons: 30, emoji: "📜", gradient: "from-orange-100 to-orange-200", badgeColor: "bg-amber-100 text-amber-700" },
-  { name: "Синтаксис және пунктуация", subject: "Қазақ тілі", grade: "11 кл", lessons: 22, emoji: "✍️", gradient: "from-pink-100 to-pink-200", badgeColor: "bg-pink-100 text-pink-700" },
-  { name: "Генетика и эволюция", subject: "Биология", grade: "11 кл", lessons: 16, emoji: "🧬", gradient: "from-teal-100 to-teal-200", badgeColor: "bg-teal-100 text-teal-700" },
-  { name: "Органическая химия", subject: "Химия", grade: "11 кл", lessons: 20, emoji: "🧪", gradient: "from-purple-100 to-purple-200", badgeColor: "bg-purple-100 text-purple-700" },
-];
+import { courses, subjects, type Subject } from "@/data/courses";
 
 const CoursesPage = () => {
   const [active, setActive] = useState<Subject>("Все");
@@ -90,6 +69,10 @@ const CoursesPage = () => {
                 </span>
               </div>
               <button className="w-full flex items-center justify-center gap-2 bg-primary text-primary-foreground text-sm py-2.5 rounded-lg hover:bg-accent transition-colors font-sans">
+              <button
+                onClick={() => navigate(`/course/${course.id}`)}
+                className="w-full flex items-center justify-center gap-2 bg-primary text-primary-foreground text-sm py-2.5 rounded-lg hover:bg-accent transition-colors font-sans"
+              >
                 Перейти к урокам
                 <ArrowRight size={14} className="group-hover:translate-x-0.5 transition-transform" />
               </button>
