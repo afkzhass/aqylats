@@ -11,11 +11,8 @@ const CoursesPage = () => {
 
   return (
     <div className="max-w-[1100px] mx-auto px-4 md:px-8 py-8 animate-fade-in">
-      {/* Header */}
       <div className="mb-6">
-        <h1 className="text-2xl md:text-3xl font-serif font-medium text-foreground">
-          Учебные курсы
-        </h1>
+        <h1 className="text-2xl md:text-3xl font-serif font-semibold text-foreground">Мои курсы</h1>
         <p className="text-muted-foreground text-sm mt-1">Выберите курс для начала обучения</p>
       </div>
 
@@ -38,47 +35,47 @@ const CoursesPage = () => {
 
       {/* Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-        {filtered.map((course) => (
-          <div
-            key={course.name}
-            className="bg-card border border-border rounded-xl overflow-hidden hover:-translate-y-1 hover:shadow-lg transition-all duration-200 group"
-          >
-            {/* Thumbnail */}
-            <div className={`h-[120px] bg-gradient-to-br ${course.gradient} flex items-center justify-center text-4xl relative`}>
-              {course.emoji}
-              <span className="absolute top-2 right-2 bg-green-50 text-success text-[10px] font-medium px-2 py-0.5 rounded-full">
-                Открыт
-              </span>
-            </div>
-
-            {/* Body */}
-            <div className="p-4">
-              <span className={`inline-block text-[11px] font-medium px-2.5 py-0.5 rounded-full mb-2 ${course.badgeColor}`}>
-                {course.subject}
-              </span>
-              <h3 className="font-serif text-[15px] font-medium text-foreground mb-3">
-                {course.name}
-              </h3>
-              <div className="flex items-center gap-4 text-muted-foreground text-xs mb-4">
-                <span className="flex items-center gap-1">
-                  <GraduationCap size={14} />
-                  {course.grade}
-                </span>
-                <span className="flex items-center gap-1">
-                  <BookOpen size={14} />
-                  {course.lessons} уроков
+        {filtered.map((course) => {
+          const pct = Math.floor(Math.random() * 25 + 5);
+          return (
+            <div
+              key={course.name}
+              onClick={() => navigate(`/course/${course.id}`)}
+              className="bg-card border border-border rounded-xl overflow-hidden hover:-translate-y-1.5 hover:shadow-xl transition-all duration-300 cursor-pointer group"
+            >
+              <div className={`h-[110px] bg-gradient-to-br ${course.gradient} flex items-center justify-center text-4xl relative`}>
+                {course.emoji}
+                <span className="absolute top-2 right-2 bg-green-50 text-success text-[10px] font-medium px-2 py-0.5 rounded-full">
+                  Открыт
                 </span>
               </div>
-              <button
-                onClick={() => navigate(`/course/${course.id}`)}
-                className="w-full flex items-center justify-center gap-2 bg-primary text-primary-foreground text-sm py-2.5 rounded-lg hover:bg-accent transition-colors font-sans"
-              >
-                Перейти к урокам
-                <ArrowRight size={14} className="group-hover:translate-x-0.5 transition-transform" />
-              </button>
+              <div className="p-4">
+                <span className={`inline-block text-[11px] font-medium px-2.5 py-0.5 rounded-full mb-2 ${course.badgeColor}`}>
+                  {course.subject}
+                </span>
+                <h3 className="font-serif text-[15px] font-medium text-foreground mb-2">{course.name}</h3>
+                <div className="flex items-center gap-4 text-muted-foreground text-xs mb-3">
+                  <span className="flex items-center gap-1"><GraduationCap size={14} />{course.grade}</span>
+                  <span className="flex items-center gap-1"><BookOpen size={14} />{course.lessons} уроков</span>
+                </div>
+                {/* Progress bar */}
+                <div className="mb-3">
+                  <div className="flex items-center justify-between text-[11px] mb-1">
+                    <span className="text-muted-foreground">Прогресс</span>
+                    <span className="font-medium text-foreground">{pct}%</span>
+                  </div>
+                  <div className="w-full h-1.5 bg-border rounded-full overflow-hidden">
+                    <div className="h-full bg-accent rounded-full transition-all" style={{ width: `${pct}%` }} />
+                  </div>
+                </div>
+                <button className="w-full flex items-center justify-center gap-2 bg-primary text-primary-foreground text-sm py-2.5 rounded-lg hover:bg-accent transition-colors font-sans">
+                  Перейти к урокам
+                  <ArrowRight size={14} className="group-hover:translate-x-0.5 transition-transform" />
+                </button>
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );

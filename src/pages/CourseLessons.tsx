@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, BookOpen, Clock, CheckCircle2, Circle, ChevronRight, GraduationCap } from "lucide-react";
-import Navbar from "@/components/Navbar";
 import { courses } from "@/data/courses";
 import LessonContent from "@/components/LessonContent";
 import AIChatPanel from "@/components/AIChatPanel";
@@ -16,17 +15,14 @@ const CourseLessons = () => {
 
   if (!course) {
     return (
-      <div className="min-h-screen bg-background font-sans">
-        <Navbar />
         <div className="flex items-center justify-center h-[60vh]">
           <div className="text-center">
             <p className="text-muted-foreground text-lg">Курс не найден</p>
             <button onClick={() => navigate("/")} className="mt-4 text-accent hover:underline text-sm">
-              Вернуться к курсам
+              Вернуться к курсам  
             </button>
           </div>
         </div>
-      </div>
     );
   }
 
@@ -66,15 +62,13 @@ const CourseLessons = () => {
   }.`;
 
   return (
-    <div className="min-h-screen bg-background font-sans">
-      <Navbar />
-
-      <div className="max-w-[1100px] mx-auto px-4 md:px-8 py-6 animate-fade-in">
+    <div className="animate-fade-in">
+      <div className="max-w-[1100px] mx-auto px-4 md:px-8 py-6">
         {/* Back button */}
         <button
           onClick={() => {
             if (activeLesson) setActiveLesson(null);
-            else navigate("/");
+          else navigate("/courses");
           }}
           className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground text-sm mb-5 transition-colors"
         >
