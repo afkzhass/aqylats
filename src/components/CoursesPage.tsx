@@ -5,6 +5,7 @@ import { courses, subjects, type Subject } from "@/data/courses";
 
 const CoursesPage = () => {
   const [active, setActive] = useState<Subject>("Все");
+  const navigate = useNavigate();
 
   const filtered = active === "Все" ? courses : courses.filter((c) => c.subject === active);
 
