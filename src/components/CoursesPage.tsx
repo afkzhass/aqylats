@@ -68,7 +68,6 @@ const CoursesPage = () => {
                   {course.lessons} уроков
                 </span>
               </div>
-              <button className="w-full flex items-center justify-center gap-2 bg-primary text-primary-foreground text-sm py-2.5 rounded-lg hover:bg-accent transition-colors font-sans">
               <button
                 onClick={() => navigate(`/course/${course.id}`)}
                 className="w-full flex items-center justify-center gap-2 bg-primary text-primary-foreground text-sm py-2.5 rounded-lg hover:bg-accent transition-colors font-sans"
