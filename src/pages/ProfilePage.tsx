@@ -1,26 +1,78 @@
-import { GraduationCap, Mail, Award, BarChart3 } from "lucide-react";
+import { useState } from "react";
+import { GraduationCap, Mail, Award, BarChart3, Save, Loader2 } from "lucide-react";
 import { courses } from "@/data/courses";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 const ProfilePage = () => {
+  const { profile, user, refreshProfile } = useAuth();
+  const [editing, setEditing] = useState(false);
+  const [fullName, setFullName] = useState(profile?.full_name || "");
+  const [saving, setSaving] = useState(false);
+
+  const initials = profile?.full_name
+    ? profile.full_name.split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase()
+    : "?";
+
+  const handleSave = async () => {
+    if (!user) return;
+    setSaving(true);
+    const { error } = await supabase
+      .from("profiles")
+      .update({ full_name: fullName })
+      .eq("user_id", user.id);
+    if (error) {
+      toast.error("Ошибка сохранения");
+    } else {
+      toast.success("Профиль обновлён!");
+      await refreshProfile();
+      setEditing(false);
+    }
+    setSaving(false);
+  };
+
   return (
     <div className="max-w-[800px] mx-auto px-4 md:px-8 py-8 animate-fade-in">
       <h1 className="text-2xl md:text-3xl font-serif font-semibold text-foreground mb-6">Профиль</h1>
 
-      {/* Profile card */}
       <div className="bg-card border border-border rounded-xl p-6 mb-6 flex flex-col sm:flex-row items-center gap-5">
         <div className="w-20 h-20 rounded-full bg-accent flex items-center justify-center text-accent-foreground text-2xl font-serif font-semibold shrink-0">
-          АБ
+          {initials}
         </div>
-        <div className="text-center sm:text-left">
-          <h2 className="text-lg font-serif font-semibold text-foreground">Айдар Бекетов</h2>
-          <div className="flex flex-wrap justify-center sm:justify-start gap-3 text-xs text-muted-foreground mt-2">
-            <span className="flex items-center gap-1"><GraduationCap size={14} />11 класс</span>
-            <span className="flex items-center gap-1"><Mail size={14} />aidar@school.kz</span>
-          </div>
+        <div className="text-center sm:text-left flex-1">
+          {editing ? (
+            <div className="space-y-3">
+              <div>
+                <Label className="text-xs">Полное имя</Label>
+                <Input value={fullName} onChange={e => setFullName(e.target.value)} className="mt-1" />
+              </div>
+              <div className="flex gap-2">
+                <Button size="sm" onClick={handleSave} disabled={saving}>
+                  {saving ? <Loader2 className="h-4 w-4 animate-spin mr-1" /> : <Save className="h-4 w-4 mr-1" />}
+                  Сохранить
+                </Button>
+                <Button size="sm" variant="ghost" onClick={() => setEditing(false)}>Отмена</Button>
+              </div>
+            </div>
+          ) : (
+            <>
+              <h2 className="text-lg font-serif font-semibold text-foreground">{profile?.full_name || "Имя не указано"}</h2>
+              <div className="flex flex-wrap justify-center sm:justify-start gap-3 text-xs text-muted-foreground mt-2">
+                <span className="flex items-center gap-1"><GraduationCap size={14} />{profile?.assigned_class || 11} класс</span>
+                <span className="flex items-center gap-1"><Mail size={14} />{profile?.email || user?.email}</span>
+              </div>
+              <button onClick={() => { setFullName(profile?.full_name || ""); setEditing(true); }} className="text-xs text-accent hover:underline mt-2">
+                Редактировать
+              </button>
+            </>
+          )}
         </div>
       </div>
 
-      {/* Achievements */}
       <h3 className="text-base font-serif font-medium text-foreground mb-3 flex items-center gap-2">
         <Award size={18} className="text-accent" /> Достижения
       </h3>
@@ -37,7 +89,6 @@ const ProfilePage = () => {
         ))}
       </div>
 
-      {/* Course progress */}
       <h3 className="text-base font-serif font-medium text-foreground mb-3 flex items-center gap-2">
         <BarChart3 size={18} className="text-accent" /> Прогресс по курсам
       </h3>

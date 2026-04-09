@@ -1,6 +1,7 @@
 import { useLocation } from "react-router-dom";
-import { Home, BookOpen, Library, User } from "lucide-react";
+import { Home, BookOpen, Library, User, LogOut } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
+import { useAuth } from "@/contexts/AuthContext";
 import {
   Sidebar,
   SidebarContent,
@@ -26,11 +27,19 @@ export function AppSidebar() {
   const collapsed = state === "collapsed";
   const location = useLocation();
   const currentPath = location.pathname;
+  const { profile, user, signOut } = useAuth();
 
   const isActive = (path: string) => {
     if (path === "/") return currentPath === "/";
     return currentPath.startsWith(path);
   };
+
+  const initials = profile?.full_name
+    ? profile.full_name.split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase()
+    : user?.email?.[0]?.toUpperCase() || "?";
+
+  const displayName = profile?.full_name || user?.email || "Ученик";
+  const classLabel = profile?.assigned_class ? `${profile.assigned_class} класс` : "";
 
   return (
     <Sidebar collapsible="icon" className="border-r-0">
@@ -58,11 +67,7 @@ export function AppSidebar() {
             <SidebarMenu>
               {navItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton
-                    asChild
-                    isActive={isActive(item.url)}
-                    tooltip={item.title}
-                  >
+                  <SidebarMenuButton asChild isActive={isActive(item.url)} tooltip={item.title}>
                     <NavLink
                       to={item.url}
                       end={item.url === "/"}
@@ -80,18 +85,26 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="p-4">
+      <SidebarFooter className="p-4 space-y-2">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-full bg-accent flex items-center justify-center text-accent-foreground text-xs font-medium shrink-0">
-            АБ
+            {initials}
           </div>
           {!collapsed && (
-            <div className="overflow-hidden">
-              <p className="text-sidebar-foreground text-sm font-sans font-medium truncate">Айдар Бекетов</p>
-              <p className="text-sidebar-foreground/50 text-[10px] font-sans">11 класс</p>
+            <div className="overflow-hidden flex-1">
+              <p className="text-sidebar-foreground text-sm font-sans font-medium truncate">{displayName}</p>
+              {classLabel && <p className="text-sidebar-foreground/50 text-[10px] font-sans">{classLabel}</p>}
             </div>
           )}
         </div>
+        {!collapsed && (
+          <button
+            onClick={signOut}
+            className="flex items-center gap-2 text-xs text-sidebar-foreground/50 hover:text-destructive transition-colors w-full px-1"
+          >
+            <LogOut className="h-3.5 w-3.5" /> Выйти
+          </button>
+        )}
       </SidebarFooter>
     </Sidebar>
   );
