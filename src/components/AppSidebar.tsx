@@ -1,7 +1,8 @@
 import { useLocation } from "react-router-dom";
-import { Home, BookOpen, Library, User, LogOut } from "lucide-react";
+import { Home, BookOpen, Library, User, LogOut, Users, FileText, Shield } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useAuth } from "@/contexts/AuthContext";
+import { useUserRole } from "@/hooks/useUserRole";
 import {
   Sidebar,
   SidebarContent,
@@ -15,11 +16,21 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 
-const navItems = [
+const baseNavItems = [
   { title: "Главная", url: "/", icon: Home },
   { title: "Мои курсы", url: "/courses", icon: BookOpen },
+  { title: "Задания", url: "/homework", icon: FileText },
   { title: "Библиотека", url: "/library", icon: Library },
   { title: "Профиль", url: "/profile", icon: User },
+];
+
+const teacherNavItems = [
+  { title: "Группы", url: "/groups", icon: Users },
+];
+
+const adminNavItems = [
+  { title: "Группы", url: "/groups", icon: Users },
+  { title: "Админ", url: "/admin", icon: Shield },
 ];
 
 export function AppSidebar() {
@@ -28,6 +39,10 @@ export function AppSidebar() {
   const location = useLocation();
   const currentPath = location.pathname;
   const { profile, user, signOut } = useAuth();
+  const { isAdmin, isTeacher } = useUserRole();
+
+  const extraItems = isAdmin ? adminNavItems : isTeacher ? teacherNavItems : [];
+  const navItems = [...baseNavItems, ...extraItems];
 
   const isActive = (path: string) => {
     if (path === "/") return currentPath === "/";

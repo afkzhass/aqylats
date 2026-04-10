@@ -11,6 +11,9 @@ import CoursesPage from "./components/CoursesPage";
 import CourseLessons from "./pages/CourseLessons";
 import LibraryPage from "./pages/LibraryPage";
 import ProfilePage from "./pages/ProfilePage";
+import GroupsPage from "./pages/GroupsPage";
+import HomeworkPage from "./pages/HomeworkPage";
+import AdminPage from "./pages/AdminPage";
 import AuthPage from "./pages/AuthPage";
 import NotFound from "./pages/NotFound";
 
@@ -31,6 +34,9 @@ const App = () => (
               <Route path="/course/:courseId" element={<CourseLessons />} />
               <Route path="/library" element={<LibraryPage />} />
               <Route path="/profile" element={<ProfilePage />} />
+              <Route path="/groups" element={<GroupsPage />} />
+              <Route path="/homework" element={<HomeworkPage />} />
+              <Route path="/admin" element={<AdminPage />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>

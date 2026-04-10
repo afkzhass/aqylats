@@ -14,6 +14,159 @@ export type Database = {
   }
   public: {
     Tables: {
+      group_members: {
+        Row: {
+          group_id: string
+          id: string
+          joined_at: string
+          student_id: string
+        }
+        Insert: {
+          group_id: string
+          id?: string
+          joined_at?: string
+          student_id: string
+        }
+        Update: {
+          group_id?: string
+          id?: string
+          joined_at?: string
+          student_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "group_members_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "groups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      groups: {
+        Row: {
+          class_name: string
+          created_at: string
+          id: string
+          teacher_id: string
+          updated_at: string
+        }
+        Insert: {
+          class_name: string
+          created_at?: string
+          id?: string
+          teacher_id: string
+          updated_at?: string
+        }
+        Update: {
+          class_name?: string
+          created_at?: string
+          id?: string
+          teacher_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      homework_assignments: {
+        Row: {
+          ai_evaluation_criteria: string | null
+          course_id: string
+          created_at: string
+          deadline: string | null
+          description: string | null
+          group_id: string | null
+          id: string
+          teacher_id: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          ai_evaluation_criteria?: string | null
+          course_id: string
+          created_at?: string
+          deadline?: string | null
+          description?: string | null
+          group_id?: string | null
+          id?: string
+          teacher_id: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          ai_evaluation_criteria?: string | null
+          course_id?: string
+          created_at?: string
+          deadline?: string | null
+          description?: string | null
+          group_id?: string | null
+          id?: string
+          teacher_id?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "homework_assignments_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "groups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      homework_submissions: {
+        Row: {
+          ai_comment: string | null
+          ai_score: number | null
+          answer_text: string | null
+          assignment_id: string
+          file_url: string | null
+          id: string
+          reviewed_at: string | null
+          status: Database["public"]["Enums"]["submission_status"]
+          student_id: string
+          submitted_at: string
+          teacher_comment: string | null
+          teacher_grade: number | null
+        }
+        Insert: {
+          ai_comment?: string | null
+          ai_score?: number | null
+          answer_text?: string | null
+          assignment_id: string
+          file_url?: string | null
+          id?: string
+          reviewed_at?: string | null
+          status?: Database["public"]["Enums"]["submission_status"]
+          student_id: string
+          submitted_at?: string
+          teacher_comment?: string | null
+          teacher_grade?: number | null
+        }
+        Update: {
+          ai_comment?: string | null
+          ai_score?: number | null
+          answer_text?: string | null
+          assignment_id?: string
+          file_url?: string | null
+          id?: string
+          reviewed_at?: string | null
+          status?: Database["public"]["Enums"]["submission_status"]
+          student_id?: string
+          submitted_at?: string
+          teacher_comment?: string | null
+          teacher_grade?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "homework_submissions_assignment_id_fkey"
+            columns: ["assignment_id"]
+            isOneToOne: false
+            referencedRelation: "homework_assignments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           assigned_class: number | null
@@ -47,15 +200,44 @@ export type Database = {
         }
         Relationships: []
       }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "teacher" | "student"
+      submission_status:
+        | "submitted"
+        | "ai_reviewed"
+        | "pending_review"
+        | "graded"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -182,6 +364,14 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "teacher", "student"],
+      submission_status: [
+        "submitted",
+        "ai_reviewed",
+        "pending_review",
+        "graded",
+      ],
+    },
   },
 } as const
