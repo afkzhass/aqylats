@@ -2,6 +2,21 @@ import { CheckCircle2, Circle, Play } from "lucide-react";
 import LimitLesson from "./lesson/LimitLesson";
 import DerivativeLesson from "./lesson/DerivativeLesson";
 import DifferentiationRulesLesson from "./lesson/DifferentiationRulesLesson";
+import PhotoeffectLesson from "./lesson/PhotoeffectLesson";
+import BohrModelLesson from "./lesson/BohrModelLesson";
+import WaveParticleLesson from "./lesson/WaveParticleLesson";
+import HydrocarbonsLesson from "./lesson/HydrocarbonsLesson";
+import AlcoholsLesson from "./lesson/AlcoholsLesson";
+import CarboxylicAcidsLesson from "./lesson/CarboxylicAcidsLesson";
+import MendelLawsLesson from "./lesson/MendelLawsLesson";
+import GeneticCodeLesson from "./lesson/GeneticCodeLesson";
+import EvolutionLesson from "./lesson/EvolutionLesson";
+import KazakhstanEarlyXXLesson from "./lesson/KazakhstanEarlyXXLesson";
+import NationalLiberationLesson from "./lesson/NationalLiberationLesson";
+import KazakhstanWWIILesson from "./lesson/KazakhstanWWIILesson";
+import JaiSoilemLesson from "./lesson/JaiSoilemLesson";
+import KurmalasSoilemLesson from "./lesson/KurmalasSoilemLesson";
+import TynysBelgileriLesson from "./lesson/TynysBelgileriLesson";
 
 interface Props {
   courseId: string;
@@ -20,6 +35,31 @@ const lessonComponents: Record<string, Record<string, React.FC>> = {
     "1": LimitLesson,
     "2": DerivativeLesson,
     "3": DifferentiationRulesLesson,
+  },
+  "quantum-physics": {
+    "1": PhotoeffectLesson,
+    "2": BohrModelLesson,
+    "3": WaveParticleLesson,
+  },
+  chemistry: {
+    "1": HydrocarbonsLesson,
+    "2": AlcoholsLesson,
+    "3": CarboxylicAcidsLesson,
+  },
+  biology: {
+    "1": MendelLawsLesson,
+    "2": GeneticCodeLesson,
+    "3": EvolutionLesson,
+  },
+  "history-kz": {
+    "1": KazakhstanEarlyXXLesson,
+    "2": NationalLiberationLesson,
+    "3": KazakhstanWWIILesson,
+  },
+  "kazakh-language": {
+    "1": JaiSoilemLesson,
+    "2": KurmalasSoilemLesson,
+    "3": TynysBelgileriLesson,
   },
 };
 

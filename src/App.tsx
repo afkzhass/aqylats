@@ -4,6 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { LanguageProvider } from "@/contexts/LanguageContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import AppLayout from "./components/AppLayout";
 import Dashboard from "./pages/Dashboard";
@@ -26,20 +27,22 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <AuthProvider>
-          <Routes>
-            <Route path="/auth" element={<AuthPage />} />
-            <Route element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
-              <Route path="/" element={<Dashboard />} />
-              <Route path="/courses" element={<CoursesPage />} />
-              <Route path="/course/:courseId" element={<CourseLessons />} />
-              <Route path="/library" element={<LibraryPage />} />
-              <Route path="/profile" element={<ProfilePage />} />
-              <Route path="/groups" element={<GroupsPage />} />
-              <Route path="/homework" element={<HomeworkPage />} />
-              <Route path="/admin" element={<AdminPage />} />
-            </Route>
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <LanguageProvider>
+            <Routes>
+              <Route path="/auth" element={<AuthPage />} />
+              <Route element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
+                <Route path="/" element={<Dashboard />} />
+                <Route path="/courses" element={<CoursesPage />} />
+                <Route path="/course/:courseId" element={<CourseLessons />} />
+                <Route path="/library" element={<LibraryPage />} />
+                <Route path="/profile" element={<ProfilePage />} />
+                <Route path="/groups" element={<GroupsPage />} />
+                <Route path="/homework" element={<HomeworkPage />} />
+                <Route path="/admin" element={<AdminPage />} />
+              </Route>
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </LanguageProvider>
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
