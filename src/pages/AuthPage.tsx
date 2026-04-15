@@ -20,7 +20,7 @@ const AuthPage = () => {
   const [fullName, setFullName] = useState("");
   const [role, setRole] = useState<Role>("student");
   const [grade, setGrade] = useState(7);
-  const [subject, setSubject] = useState(subjectOptions[0]);
+  const [subject, setSubject] = useState<string>(subjectOptions[0]);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -47,15 +47,14 @@ const AuthPage = () => {
 
         // After signup, update profile with role-specific data
         if (data.user) {
-          const profileUpdate: Record<string, any> = {
-            assigned_class: role === "student" ? grade : null,
-            subject: role === "teacher" ? subject : null,
-          };
           // Wait a moment for the trigger to create the profile
           setTimeout(async () => {
             await supabase
               .from("profiles")
-              .update(profileUpdate)
+              .update({
+                assigned_class: role === "student" ? grade : null,
+                subject: role === "teacher" ? subject : null,
+              })
               .eq("user_id", data.user!.id);
           }, 1000);
 

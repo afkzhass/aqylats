@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 
 const ProfilePage = () => {
   const { profile, user, refreshProfile } = useAuth();
-  const { isTeacher, isStudent, isAdmin, roles } = useUserRole();
+  const { isTeacher, isStudent, isAdmin } = useUserRole();
   const [editing, setEditing] = useState(false);
   const [fullName, setFullName] = useState(profile?.full_name || "");
   const [saving, setSaving] = useState(false);
