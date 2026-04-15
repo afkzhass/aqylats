@@ -175,6 +175,7 @@ export type Database = {
           email: string
           full_name: string
           id: string
+          subject: string | null
           updated_at: string
           user_id: string
         }
@@ -185,6 +186,7 @@ export type Database = {
           email?: string
           full_name?: string
           id?: string
+          subject?: string | null
           updated_at?: string
           user_id: string
         }
@@ -195,8 +197,36 @@ export type Database = {
           email?: string
           full_name?: string
           id?: string
+          subject?: string | null
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      teacher_stats: {
+        Row: {
+          avg_student_score: number | null
+          id: string
+          interactive_lessons_count: number | null
+          teacher_id: string
+          topics_covered_pct: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          avg_student_score?: number | null
+          id?: string
+          interactive_lessons_count?: number | null
+          teacher_id: string
+          topics_covered_pct?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          avg_student_score?: number | null
+          id?: string
+          interactive_lessons_count?: number | null
+          teacher_id?: string
+          topics_covered_pct?: number | null
+          updated_at?: string | null
         }
         Relationships: []
       }

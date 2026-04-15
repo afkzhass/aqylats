@@ -16,6 +16,7 @@ import GroupsPage from "./pages/GroupsPage";
 import HomeworkPage from "./pages/HomeworkPage";
 import AdminPage from "./pages/AdminPage";
 import AuthPage from "./pages/AuthPage";
+import LeaderboardPage from "./pages/LeaderboardPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -39,6 +40,7 @@ const App = () => (
                 <Route path="/groups" element={<GroupsPage />} />
                 <Route path="/homework" element={<HomeworkPage />} />
                 <Route path="/admin" element={<AdminPage />} />
+                <Route path="/leaderboard" element={<LeaderboardPage />} />
               </Route>
               <Route path="*" element={<NotFound />} />
             </Routes>
