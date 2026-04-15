@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { GraduationCap, Mail, Award, BarChart3, Save, Loader2 } from "lucide-react";
+import { GraduationCap, Mail, Award, BarChart3, Save, Loader2, BookOpen } from "lucide-react";
 import { courses } from "@/data/courses";
 import { useAuth } from "@/contexts/AuthContext";
+import { useUserRole } from "@/hooks/useUserRole";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -10,6 +11,7 @@ import { Label } from "@/components/ui/label";
 
 const ProfilePage = () => {
   const { profile, user, refreshProfile } = useAuth();
+  const { isTeacher, isStudent, isAdmin, roles } = useUserRole();
   const [editing, setEditing] = useState(false);
   const [fullName, setFullName] = useState(profile?.full_name || "");
   const [saving, setSaving] = useState(false);
@@ -17,6 +19,8 @@ const ProfilePage = () => {
   const initials = profile?.full_name
     ? profile.full_name.split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase()
     : "?";
+
+  const roleLabel = isAdmin ? "Администратор" : isTeacher ? "Учитель" : "Ученик";
 
   const handleSave = async () => {
     if (!user) return;
@@ -62,7 +66,16 @@ const ProfilePage = () => {
             <>
               <h2 className="text-lg font-serif font-semibold text-foreground">{profile?.full_name || "Имя не указано"}</h2>
               <div className="flex flex-wrap justify-center sm:justify-start gap-3 text-xs text-muted-foreground mt-2">
-                <span className="flex items-center gap-1"><GraduationCap size={14} />{profile?.assigned_class || 11} класс</span>
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-accent/10 text-accent rounded-full font-medium">
+                  {isTeacher ? <BookOpen size={12} /> : <GraduationCap size={12} />}
+                  {roleLabel}
+                </span>
+                {isStudent && profile?.assigned_class && (
+                  <span className="flex items-center gap-1"><GraduationCap size={14} />{profile.assigned_class} класс</span>
+                )}
+                {isTeacher && (profile as any)?.subject && (
+                  <span className="flex items-center gap-1"><BookOpen size={14} />{(profile as any).subject}</span>
+                )}
                 <span className="flex items-center gap-1"><Mail size={14} />{profile?.email || user?.email}</span>
               </div>
               <button onClick={() => { setFullName(profile?.full_name || ""); setEditing(true); }} className="text-xs text-accent hover:underline mt-2">

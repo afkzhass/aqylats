@@ -6,13 +6,21 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Mail, Lock, User, Loader2 } from "lucide-react";
+import { Mail, Lock, User, Loader2, GraduationCap, BookOpen } from "lucide-react";
+
+const subjectOptions = ["Математика", "Физика", "Химия", "Биология", "История", "Қазақ тілі"] as const;
+const gradeOptions = Array.from({ length: 11 }, (_, i) => i + 1);
+
+type Role = "student" | "teacher";
 
 const AuthPage = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
+  const [role, setRole] = useState<Role>("student");
+  const [grade, setGrade] = useState(7);
+  const [subject, setSubject] = useState(subjectOptions[0]);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -27,7 +35,7 @@ const AuthPage = () => {
         toast.success("Вход выполнен!");
         navigate("/");
       } else {
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
@@ -36,6 +44,32 @@ const AuthPage = () => {
           },
         });
         if (error) throw error;
+
+        // After signup, update profile with role-specific data
+        if (data.user) {
+          const profileUpdate: Record<string, any> = {
+            assigned_class: role === "student" ? grade : null,
+            subject: role === "teacher" ? subject : null,
+          };
+          // Wait a moment for the trigger to create the profile
+          setTimeout(async () => {
+            await supabase
+              .from("profiles")
+              .update(profileUpdate)
+              .eq("user_id", data.user!.id);
+          }, 1000);
+
+          // Set the correct role (trigger sets 'student' by default)
+          if (role === "teacher") {
+            setTimeout(async () => {
+              await supabase
+                .from("user_roles")
+                .update({ role: "teacher" })
+                .eq("user_id", data.user!.id);
+            }, 1000);
+          }
+        }
+
         toast.success("Проверьте почту для подтверждения регистрации!");
       }
     } catch (err: any) {
@@ -97,13 +131,82 @@ const AuthPage = () => {
 
           <form onSubmit={handleEmailAuth} className="space-y-4">
             {!isLogin && (
-              <div>
-                <Label htmlFor="fullName" className="text-sm">Полное имя</Label>
-                <div className="relative mt-1">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input id="fullName" value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="Айгуль Серикова" className="pl-10" required />
+              <>
+                <div>
+                  <Label htmlFor="fullName" className="text-sm">Полное имя</Label>
+                  <div className="relative mt-1">
+                    <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input id="fullName" value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="Айгуль Серикова" className="pl-10" required />
+                  </div>
                 </div>
-              </div>
+
+                {/* Role selection */}
+                <div>
+                  <Label className="text-sm mb-2 block">Выберите роль</Label>
+                  <div className="grid grid-cols-2 gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setRole("student")}
+                      className={`flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all ${
+                        role === "student"
+                          ? "border-accent bg-accent/10 text-accent"
+                          : "border-border text-muted-foreground hover:border-accent/40"
+                      }`}
+                    >
+                      <GraduationCap size={28} />
+                      <span className="text-sm font-medium">Ученик</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setRole("teacher")}
+                      className={`flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all ${
+                        role === "teacher"
+                          ? "border-accent bg-accent/10 text-accent"
+                          : "border-border text-muted-foreground hover:border-accent/40"
+                      }`}
+                    >
+                      <BookOpen size={28} />
+                      <span className="text-sm font-medium">Учитель</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Grade selection for students */}
+                {role === "student" && (
+                  <div>
+                    <Label htmlFor="grade" className="text-sm">Класс</Label>
+                    <select
+                      id="grade"
+                      value={grade}
+                      onChange={(e) => setGrade(Number(e.target.value))}
+                      className="mt-1 w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-accent"
+                      required
+                    >
+                      {gradeOptions.map((g) => (
+                        <option key={g} value={g}>{g} класс</option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+
+                {/* Subject selection for teachers */}
+                {role === "teacher" && (
+                  <div>
+                    <Label htmlFor="subject" className="text-sm">Предмет</Label>
+                    <select
+                      id="subject"
+                      value={subject}
+                      onChange={(e) => setSubject(e.target.value)}
+                      className="mt-1 w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-accent"
+                      required
+                    >
+                      {subjectOptions.map((s) => (
+                        <option key={s} value={s}>{s}</option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+              </>
             )}
             <div>
               <Label htmlFor="email" className="text-sm">Email</Label>

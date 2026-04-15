@@ -1,7 +1,6 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 import { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
-import { useNavigate } from "react-router-dom";
 
 interface Profile {
   id: string;
@@ -10,6 +9,7 @@ interface Profile {
   email: string;
   avatar_url: string | null;
   assigned_class: number | null;
+  subject: string | null;
 }
 
 interface AuthContextType {
