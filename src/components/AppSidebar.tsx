@@ -1,5 +1,5 @@
 import { useLocation } from "react-router-dom";
-import { Home, BookOpen, Library, User, LogOut, Users, FileText, Shield } from "lucide-react";
+import { Home, BookOpen, Library, User, LogOut, Users, FileText, Shield, Trophy } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUserRole } from "@/hooks/useUserRole";
@@ -20,6 +20,7 @@ const baseNavItems = [
   { title: "Главная", url: "/", icon: Home },
   { title: "Мои курсы", url: "/courses", icon: BookOpen },
   { title: "Задания", url: "/homework", icon: FileText },
+  { title: "Рейтинг", url: "/leaderboard", icon: Trophy },
   { title: "Библиотека", url: "/library", icon: Library },
   { title: "Профиль", url: "/profile", icon: User },
 ];
