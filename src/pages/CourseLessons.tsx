@@ -1,17 +1,60 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, BookOpen, Clock, CheckCircle2, Circle, ChevronRight, GraduationCap } from "lucide-react";
 import { courses } from "@/data/courses";
 import LessonContent from "@/components/LessonContent";
 import AIChatPanel from "@/components/AIChatPanel";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 
 const CourseLessons = () => {
   const { courseId } = useParams<{ courseId: string }>();
   const navigate = useNavigate();
   const course = courses.find((c) => c.id === courseId);
+  const { user } = useAuth();
 
   const [completedLessons, setCompletedLessons] = useState<Set<string>>(new Set());
   const [activeLesson, setActiveLesson] = useState<string | null>(null);
+
+  // Load progress from DB
+  useEffect(() => {
+    const load = async () => {
+      if (!user || !course) return;
+      const { data } = await supabase
+        .from("lesson_progress")
+        .select("lesson_id, completed")
+        .eq("student_id", user.id)
+        .eq("course_id", course.id);
+      if (data) {
+        setCompletedLessons(new Set(data.filter((r) => r.completed).map((r) => r.lesson_id)));
+      }
+    };
+    load();
+  }, [user, course]);
+
+  // Track when a lesson is opened
+  useEffect(() => {
+    const track = async () => {
+      if (!user || !course || !activeLesson) return;
+      await supabase.from("lesson_progress").upsert(
+        {
+          student_id: user.id,
+          course_id: course.id,
+          lesson_id: activeLesson,
+          progress_pct: completedLessons.has(activeLesson) ? 100 : 50,
+          completed: completedLessons.has(activeLesson),
+          last_viewed_at: new Date().toISOString(),
+        },
+        { onConflict: "student_id,lesson_id" }
+      );
+      await supabase
+        .from("profiles")
+        .update({ last_lesson_id: activeLesson, last_course_id: course.id })
+        .eq("user_id", user.id);
+    };
+    track();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeLesson, user?.id, course?.id]);
 
   if (!course) {
     return (
@@ -30,13 +73,27 @@ const CourseLessons = () => {
     ? Math.round((completedLessons.size / course.lessonList.length) * 100)
     : 0;
 
-  const toggleComplete = (lessonId: string) => {
+  const toggleComplete = async (lessonId: string) => {
+    const isCurrentlyDone = completedLessons.has(lessonId);
     setCompletedLessons((prev) => {
       const next = new Set(prev);
       if (next.has(lessonId)) next.delete(lessonId);
       else next.add(lessonId);
       return next;
     });
+    if (user) {
+      await supabase.from("lesson_progress").upsert(
+        {
+          student_id: user.id,
+          course_id: course.id,
+          lesson_id: lessonId,
+          progress_pct: !isCurrentlyDone ? 100 : 50,
+          completed: !isCurrentlyDone,
+          last_viewed_at: new Date().toISOString(),
+        },
+        { onConflict: "student_id,lesson_id" }
+      );
+    }
   };
 
   const activeLessonData = activeLesson ? course.lessonList.find((l) => l.id === activeLesson) : null;

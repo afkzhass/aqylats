@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { GraduationCap, Mail, Award, BarChart3, Save, Loader2, BookOpen } from "lucide-react";
 import { courses } from "@/data/courses";
 import { useAuth } from "@/contexts/AuthContext";
@@ -8,6 +8,8 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { JoinClassCard } from "@/components/JoinClassCard";
+import { TeacherClassCodes } from "@/components/TeacherClassCodes";
 
 const ProfilePage = () => {
   const { profile, user, refreshProfile } = useAuth();
@@ -15,6 +17,30 @@ const ProfilePage = () => {
   const [editing, setEditing] = useState(false);
   const [fullName, setFullName] = useState(profile?.full_name || "");
   const [saving, setSaving] = useState(false);
+  const [progressMap, setProgressMap] = useState<Record<string, number>>({});
+
+  useEffect(() => {
+    const loadProgress = async () => {
+      if (!user) return;
+      const { data } = await supabase
+        .from("lesson_progress")
+        .select("course_id, progress_pct")
+        .eq("student_id", user.id);
+      if (!data) return;
+      const acc: Record<string, { sum: number; count: number }> = {};
+      data.forEach((r) => {
+        if (!acc[r.course_id]) acc[r.course_id] = { sum: 0, count: 0 };
+        acc[r.course_id].sum += r.progress_pct || 0;
+        acc[r.course_id].count += 1;
+      });
+      const result: Record<string, number> = {};
+      Object.entries(acc).forEach(([k, v]) => {
+        result[k] = Math.round(v.sum / v.count);
+      });
+      setProgressMap(result);
+    };
+    loadProgress();
+  }, [user]);
 
   const initials = profile?.full_name
     ? profile.full_name.split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase()
@@ -86,6 +112,10 @@ const ProfilePage = () => {
         </div>
       </div>
 
+      {/* Teacher: show class codes; Student: join-by-code form */}
+      {user && isTeacher && <TeacherClassCodes teacherId={user.id} />}
+      {user && isStudent && <JoinClassCard userId={user.id} />}
+
       <h3 className="text-base font-serif font-medium text-foreground mb-3 flex items-center gap-2">
         <Award size={18} className="text-accent" /> Достижения
       </h3>
@@ -107,7 +137,7 @@ const ProfilePage = () => {
       </h3>
       <div className="space-y-3">
         {courses.map((c) => {
-          const pct = Math.floor(Math.random() * 30);
+          const pct = progressMap[c.id] || 0;
           return (
             <div key={c.id} className="bg-card border border-border rounded-xl p-4">
               <div className="flex items-center justify-between mb-2">

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUserRole } from "@/hooks/useUserRole";
-import { Plus, Users, Trash2 } from "lucide-react";
+import { Plus, Users, Trash2, Copy, Hash } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -11,6 +11,7 @@ import { toast } from "@/hooks/use-toast";
 interface Group {
   id: string;
   class_name: string;
+  class_code: string | null;
   teacher_id: string;
   created_at: string;
   member_count?: number;
@@ -31,7 +32,7 @@ const GroupsPage = () => {
 
   const fetchGroups = async () => {
     const { data } = await supabase.from("groups").select("*");
-    if (data) setGroups(data);
+    if (data) setGroups(data as Group[]);
     setLoading(false);
   };
 
@@ -66,14 +67,14 @@ const GroupsPage = () => {
       .from("group_members")
       .select("id, student_id, joined_at")
       .eq("group_id", groupId);
-    
+
     if (data && data.length > 0) {
       const studentIds = data.map(m => m.student_id);
       const { data: profiles } = await supabase
         .from("profiles")
-        .select("user_id, full_name, email")
+        .select("user_id, full_name, email, assigned_class")
         .in("user_id", studentIds);
-      
+
       const enriched = data.map(m => ({
         ...m,
         profile: profiles?.find(p => p.user_id === m.student_id),
@@ -91,7 +92,7 @@ const GroupsPage = () => {
       .select("user_id")
       .eq("email", studentEmail.trim())
       .single();
-    
+
     if (!profile) {
       toast({ title: "Ученик не найден", variant: "destructive" });
       return;
@@ -116,6 +117,11 @@ const GroupsPage = () => {
     if (selectedGroup) fetchMembers(selectedGroup.id);
   };
 
+  const copyCode = (code: string) => {
+    navigator.clipboard.writeText(code);
+    toast({ title: "Код скопирован", description: code });
+  };
+
   if (loading) return <div className="flex items-center justify-center h-64"><div className="w-8 h-8 border-4 border-accent border-t-transparent rounded-full animate-spin" /></div>;
 
   return (
@@ -137,6 +143,9 @@ const GroupsPage = () => {
                 value={newClassName}
                 onChange={e => setNewClassName(e.target.value)}
               />
+              <p className="text-xs text-muted-foreground">
+                После создания будет автоматически сгенерирован уникальный код для приглашения учеников.
+              </p>
               <Button onClick={createGroup}>Создать</Button>
             </DialogContent>
           </Dialog>
@@ -166,6 +175,20 @@ const GroupsPage = () => {
                 </button>
               )}
             </div>
+            {g.class_code && (
+              <button
+                onClick={(e) => { e.stopPropagation(); copyCode(g.class_code!); }}
+                className="mt-3 w-full flex items-center justify-between gap-2 px-3 py-2 rounded-lg bg-accent/5 border border-accent/20 hover:bg-accent/10 transition-colors"
+              >
+                <span className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <Hash size={12} /> Код для учеников
+                </span>
+                <span className="font-mono font-semibold text-accent text-sm tracking-wider flex items-center gap-1.5">
+                  {g.class_code}
+                  <Copy size={12} />
+                </span>
+              </button>
+            )}
           </div>
         ))}
         {groups.length === 0 && <p className="text-muted-foreground col-span-2 text-center py-8">Нет групп</p>}
@@ -173,13 +196,18 @@ const GroupsPage = () => {
 
       {selectedGroup && (
         <div className="mt-8 bg-card border border-border rounded-xl p-6">
-          <h2 className="text-lg font-serif font-medium text-foreground mb-4">
+          <h2 className="text-lg font-serif font-medium text-foreground mb-2">
             Ученики: {selectedGroup.class_name}
           </h2>
+          {selectedGroup.class_code && (
+            <p className="text-xs text-muted-foreground mb-4">
+              Сообщите ученикам код <span className="font-mono font-semibold text-accent">{selectedGroup.class_code}</span> — они смогут привязаться к классу через профиль.
+            </p>
+          )}
           {canManage && (
             <div className="flex gap-2 mb-4">
               <Input
-                placeholder="Email ученика"
+                placeholder="Email ученика (быстрое добавление)"
                 value={studentEmail}
                 onChange={e => setStudentEmail(e.target.value)}
                 className="max-w-xs"
@@ -192,7 +220,10 @@ const GroupsPage = () => {
               <div key={m.id} className="flex items-center justify-between py-2 px-3 rounded-lg bg-muted/50">
                 <div>
                   <p className="text-sm font-medium text-foreground">{m.profile?.full_name || "—"}</p>
-                  <p className="text-xs text-muted-foreground">{m.profile?.email}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {m.profile?.email}
+                    {m.profile?.assigned_class && ` · ${m.profile.assigned_class} класс`}
+                  </p>
                 </div>
                 {canManage && (
                   <button onClick={() => removeMember(m.id)} className="text-muted-foreground hover:text-destructive">

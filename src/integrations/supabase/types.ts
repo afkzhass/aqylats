@@ -45,6 +45,7 @@ export type Database = {
       }
       groups: {
         Row: {
+          class_code: string | null
           class_name: string
           created_at: string
           id: string
@@ -52,6 +53,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          class_code?: string | null
           class_name: string
           created_at?: string
           id?: string
@@ -59,6 +61,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          class_code?: string | null
           class_name?: string
           created_at?: string
           id?: string
@@ -167,6 +170,42 @@ export type Database = {
           },
         ]
       }
+      lesson_progress: {
+        Row: {
+          completed: boolean
+          course_id: string
+          created_at: string
+          id: string
+          last_viewed_at: string
+          lesson_id: string
+          progress_pct: number
+          student_id: string
+          updated_at: string
+        }
+        Insert: {
+          completed?: boolean
+          course_id: string
+          created_at?: string
+          id?: string
+          last_viewed_at?: string
+          lesson_id: string
+          progress_pct?: number
+          student_id: string
+          updated_at?: string
+        }
+        Update: {
+          completed?: boolean
+          course_id?: string
+          created_at?: string
+          id?: string
+          last_viewed_at?: string
+          lesson_id?: string
+          progress_pct?: number
+          student_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           assigned_class: number | null
@@ -175,7 +214,10 @@ export type Database = {
           email: string
           full_name: string
           id: string
+          last_course_id: string | null
+          last_lesson_id: string | null
           subject: string | null
+          total_lessons_completed: number
           updated_at: string
           user_id: string
         }
@@ -186,7 +228,10 @@ export type Database = {
           email?: string
           full_name?: string
           id?: string
+          last_course_id?: string | null
+          last_lesson_id?: string | null
           subject?: string | null
+          total_lessons_completed?: number
           updated_at?: string
           user_id: string
         }
@@ -197,7 +242,10 @@ export type Database = {
           email?: string
           full_name?: string
           id?: string
+          last_course_id?: string | null
+          last_lesson_id?: string | null
           subject?: string | null
+          total_lessons_completed?: number
           updated_at?: string
           user_id?: string
         }
@@ -253,6 +301,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      generate_class_code: { Args: never; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -260,6 +309,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      join_group_by_code: { Args: { _code: string }; Returns: Json }
     }
     Enums: {
       app_role: "admin" | "teacher" | "student"
