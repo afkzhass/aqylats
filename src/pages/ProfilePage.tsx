@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { GraduationCap, Mail, Award, BarChart3, Save, Loader2, BookOpen } from "lucide-react";
 import { courses } from "@/data/courses";
 import { useAuth } from "@/contexts/AuthContext";
@@ -8,6 +8,8 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { JoinClassCard } from "@/components/JoinClassCard";
+import { TeacherClassCodes } from "@/components/TeacherClassCodes";
 
 const ProfilePage = () => {
   const { profile, user, refreshProfile } = useAuth();
