@@ -88,6 +88,10 @@ const ProfilePage = () => {
         </div>
       </div>
 
+      {/* Teacher: show class codes; Student: join-by-code form */}
+      {user && isTeacher && <TeacherClassCodes teacherId={user.id} />}
+      {user && isStudent && <JoinClassCard userId={user.id} />}
+
       <h3 className="text-base font-serif font-medium text-foreground mb-3 flex items-center gap-2">
         <Award size={18} className="text-accent" /> Достижения
       </h3>
