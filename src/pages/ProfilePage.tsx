@@ -137,7 +137,7 @@ const ProfilePage = () => {
       </h3>
       <div className="space-y-3">
         {courses.map((c) => {
-          const pct = Math.floor(Math.random() * 30);
+          const pct = progressMap[c.id] || 0;
           return (
             <div key={c.id} className="bg-card border border-border rounded-xl p-4">
               <div className="flex items-center justify-between mb-2">
