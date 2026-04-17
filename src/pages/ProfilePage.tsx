@@ -17,6 +17,30 @@ const ProfilePage = () => {
   const [editing, setEditing] = useState(false);
   const [fullName, setFullName] = useState(profile?.full_name || "");
   const [saving, setSaving] = useState(false);
+  const [progressMap, setProgressMap] = useState<Record<string, number>>({});
+
+  useEffect(() => {
+    const loadProgress = async () => {
+      if (!user) return;
+      const { data } = await supabase
+        .from("lesson_progress")
+        .select("course_id, progress_pct")
+        .eq("student_id", user.id);
+      if (!data) return;
+      const acc: Record<string, { sum: number; count: number }> = {};
+      data.forEach((r) => {
+        if (!acc[r.course_id]) acc[r.course_id] = { sum: 0, count: 0 };
+        acc[r.course_id].sum += r.progress_pct || 0;
+        acc[r.course_id].count += 1;
+      });
+      const result: Record<string, number> = {};
+      Object.entries(acc).forEach(([k, v]) => {
+        result[k] = Math.round(v.sum / v.count);
+      });
+      setProgressMap(result);
+    };
+    loadProgress();
+  }, [user]);
 
   const initials = profile?.full_name
     ? profile.full_name.split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase()
