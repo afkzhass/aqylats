@@ -11,6 +11,7 @@ import Dashboard from "./pages/Dashboard";
 import CoursesPage from "./components/CoursesPage";
 import CourseLessons from "./pages/CourseLessons";
 import LibraryPage from "./pages/LibraryPage";
+import LessonsPage from "./pages/LessonsPage";
 import ProfilePage from "./pages/ProfilePage";
 import GroupsPage from "./pages/GroupsPage";
 import HomeworkPage from "./pages/HomeworkPage";
