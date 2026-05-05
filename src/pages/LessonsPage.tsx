@@ -44,7 +44,7 @@ const LessonsPage = () => {
       setLoading(false);
     };
     load();
-  }, [language, role, profile?.assigned_class, profile?.subject]);
+  }, [language, isStudent, isTeacher, profile?.assigned_class, profile?.subject]);
 
   return (
     <div className="max-w-[1000px] mx-auto px-4 md:px-8 py-8 animate-fade-in">
