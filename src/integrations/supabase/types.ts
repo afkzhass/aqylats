@@ -206,6 +206,42 @@ export type Database = {
         }
         Relationships: []
       }
+      lessons: {
+        Row: {
+          content: string
+          created_at: string
+          grade: number
+          id: string
+          language: string
+          subject: string
+          title: string
+          updated_at: string
+          video_url: string | null
+        }
+        Insert: {
+          content?: string
+          created_at?: string
+          grade: number
+          id?: string
+          language?: string
+          subject: string
+          title: string
+          updated_at?: string
+          video_url?: string | null
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          grade?: number
+          id?: string
+          language?: string
+          subject?: string
+          title?: string
+          updated_at?: string
+          video_url?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           assigned_class: number | null
