@@ -33,9 +33,9 @@ const LessonsPage = () => {
         .order("grade", { ascending: true });
 
       // Students: filter by their grade; teachers: by their subject; admin: see all
-      if (role === "student" && profile?.assigned_class) {
+      if (isStudent && profile?.assigned_class) {
         q = q.eq("grade", profile.assigned_class);
-      } else if (role === "teacher" && profile?.subject) {
+      } else if (isTeacher && profile?.subject) {
         q = q.eq("subject", profile.subject);
       }
 
@@ -53,9 +53,9 @@ const LessonsPage = () => {
           {language === "kz" ? "Сабақтар" : language === "en" ? "Lessons" : "Уроки"}
         </h1>
         <p className="text-muted-foreground text-sm mt-1">
-          {role === "student" && profile?.assigned_class
+          {isStudent && profile?.assigned_class
             ? `${profile.assigned_class} ${language === "kz" ? "сынып" : "класс"}`
-            : role === "teacher" && profile?.subject
+            : isTeacher && profile?.subject
             ? profile.subject
             : language === "kz" ? "Барлық сабақтар" : "Все уроки"}
         </p>
