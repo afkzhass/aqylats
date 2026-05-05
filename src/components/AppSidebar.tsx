@@ -20,6 +20,7 @@ const baseNavItems = [
   { title: "Главная", url: "/", icon: Home },
   { title: "Мои курсы", url: "/courses", icon: BookOpen },
   { title: "Задания", url: "/homework", icon: FileText },
+  { title: "Уроки", url: "/lessons", icon: BookOpen },
   { title: "Рейтинг", url: "/leaderboard", icon: Trophy },
   { title: "Библиотека", url: "/library", icon: Library },
   { title: "Профиль", url: "/profile", icon: User },
