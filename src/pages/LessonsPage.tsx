@@ -18,7 +18,7 @@ interface Lesson {
 const LessonsPage = () => {
   const { profile } = useAuth();
   const { language } = useLanguage();
-  const { role } = useUserRole();
+  const { isStudent, isTeacher } = useUserRole();
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState<Lesson | null>(null);
