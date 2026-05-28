@@ -14,6 +14,68 @@ export type Database = {
   }
   public: {
     Tables: {
+      course_translations: {
+        Row: {
+          course_id: string
+          created_at: string
+          description: string | null
+          id: string
+          language: Database["public"]["Enums"]["app_language"]
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          course_id: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          language: Database["public"]["Enums"]["app_language"]
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          course_id?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          language?: Database["public"]["Enums"]["app_language"]
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "course_translations_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      courses: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean
+          slug: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          slug: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          slug?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       group_members: {
         Row: {
           group_id: string
@@ -206,6 +268,47 @@ export type Database = {
         }
         Relationships: []
       }
+      lesson_translations: {
+        Row: {
+          created_at: string
+          id: string
+          language: Database["public"]["Enums"]["app_language"]
+          lesson_id: string
+          task_description: string
+          theory_content: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          language: Database["public"]["Enums"]["app_language"]
+          lesson_id: string
+          task_description?: string
+          theory_content?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          language?: Database["public"]["Enums"]["app_language"]
+          lesson_id?: string
+          task_description?: string
+          theory_content?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lesson_translations_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "lessons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       lessons: {
         Row: {
           content: string
@@ -252,6 +355,7 @@ export type Database = {
           id: string
           last_course_id: string | null
           last_lesson_id: string | null
+          preferred_language: Database["public"]["Enums"]["app_language"]
           subject: string | null
           total_lessons_completed: number
           updated_at: string
@@ -266,6 +370,7 @@ export type Database = {
           id?: string
           last_course_id?: string | null
           last_lesson_id?: string | null
+          preferred_language?: Database["public"]["Enums"]["app_language"]
           subject?: string | null
           total_lessons_completed?: number
           updated_at?: string
@@ -280,12 +385,54 @@ export type Database = {
           id?: string
           last_course_id?: string | null
           last_lesson_id?: string | null
+          preferred_language?: Database["public"]["Enums"]["app_language"]
           subject?: string | null
           total_lessons_completed?: number
           updated_at?: string
           user_id?: string
         }
         Relationships: []
+      }
+      student_lesson_states: {
+        Row: {
+          created_at: string
+          error_history: Json
+          hint_level: number
+          id: string
+          is_completed: boolean
+          lesson_id: string
+          student_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          error_history?: Json
+          hint_level?: number
+          id?: string
+          is_completed?: boolean
+          lesson_id: string
+          student_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          error_history?: Json
+          hint_level?: number
+          id?: string
+          is_completed?: boolean
+          lesson_id?: string
+          student_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "student_lesson_states_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "lessons"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       teacher_stats: {
         Row: {
@@ -348,6 +495,7 @@ export type Database = {
       join_group_by_code: { Args: { _code: string }; Returns: Json }
     }
     Enums: {
+      app_language: "kk" | "ru" | "en"
       app_role: "admin" | "teacher" | "student"
       submission_status:
         | "submitted"
@@ -481,6 +629,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      app_language: ["kk", "ru", "en"],
       app_role: ["admin", "teacher", "student"],
       submission_status: [
         "submitted",
