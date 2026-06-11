@@ -29,8 +29,17 @@ import {
 } from "https://deno.land/std@0.224.0/assert/mod.ts";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
-const ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY")!;
+const ANON_KEY =
+  Deno.env.get("SUPABASE_ANON_KEY") ??
+  Deno.env.get("SUPABASE_PUBLISHABLE_KEY") ??
+  "";
 const SERVICE_ROLE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+
+if (!SUPABASE_URL || !ANON_KEY || !SERVICE_ROLE) {
+  throw new Error(
+    "Missing env: need SUPABASE_URL, SUPABASE_(ANON|PUBLISHABLE)_KEY, SUPABASE_SERVICE_ROLE_KEY",
+  );
+}
 
 const admin = createClient(SUPABASE_URL, SERVICE_ROLE, {
   auth: { autoRefreshToken: false, persistSession: false },
