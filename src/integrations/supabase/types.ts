@@ -76,6 +76,35 @@ export type Database = {
         }
         Relationships: []
       }
+      group_codes: {
+        Row: {
+          class_code: string
+          created_at: string
+          group_id: string
+          updated_at: string
+        }
+        Insert: {
+          class_code: string
+          created_at?: string
+          group_id: string
+          updated_at?: string
+        }
+        Update: {
+          class_code?: string
+          created_at?: string
+          group_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "group_codes_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: true
+            referencedRelation: "groups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       group_members: {
         Row: {
           group_id: string
@@ -107,7 +136,6 @@ export type Database = {
       }
       groups: {
         Row: {
-          class_code: string | null
           class_name: string
           created_at: string
           id: string
@@ -115,7 +143,6 @@ export type Database = {
           updated_at: string
         }
         Insert: {
-          class_code?: string | null
           class_name: string
           created_at?: string
           id?: string
@@ -123,7 +150,6 @@ export type Database = {
           updated_at?: string
         }
         Update: {
-          class_code?: string | null
           class_name?: string
           created_at?: string
           id?: string
