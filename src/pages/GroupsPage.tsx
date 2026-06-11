@@ -32,7 +32,16 @@ const GroupsPage = () => {
 
   const fetchGroups = async () => {
     const { data } = await supabase.from("groups").select("*");
-    if (data) setGroups(data as Group[]);
+    if (data) {
+      const ids = data.map((g) => g.id);
+      const { data: codes } = await supabase
+        .from("group_codes")
+        .select("group_id, class_code")
+        .in("group_id", ids);
+      const codeMap = new Map<string, string>();
+      codes?.forEach((c) => codeMap.set(c.group_id, c.class_code));
+      setGroups(data.map((g) => ({ ...g, class_code: codeMap.get(g.id) || null })));
+    }
     setLoading(false);
   };
 
