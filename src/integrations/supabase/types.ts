@@ -518,6 +518,14 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_group_member: {
+        Args: { _group_id: string; _user_id: string }
+        Returns: boolean
+      }
+      is_group_teacher: {
+        Args: { _group_id: string; _user_id: string }
+        Returns: boolean
+      }
       join_group_by_code: { Args: { _code: string }; Returns: Json }
     }
     Enums: {
