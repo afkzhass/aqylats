@@ -17,26 +17,29 @@ export const TeacherClassCodes = ({ teacherId }: { teacherId: string }) => {
     const load = async () => {
       const { data: gs } = await supabase
         .from("groups")
-        .select("id, class_name, class_code")
+        .select("id, class_name")
         .eq("teacher_id", teacherId);
       if (!gs?.length) {
         setGroups([]);
         return;
       }
       const ids = gs.map((g) => g.id);
-      const { data: members } = await supabase
-        .from("group_members")
-        .select("group_id")
-        .in("group_id", ids);
+
+      const [{ data: members }, { data: codes }] = await Promise.all([
+        supabase.from("group_members").select("group_id").in("group_id", ids),
+        supabase.from("group_codes").select("group_id, class_code").in("group_id", ids),
+      ]);
 
       const counts = new Map<string, number>();
       members?.forEach((m) => counts.set(m.group_id, (counts.get(m.group_id) || 0) + 1));
+      const codeMap = new Map<string, string>();
+      codes?.forEach((c) => codeMap.set(c.group_id, c.class_code));
 
       setGroups(
         gs.map((g) => ({
           id: g.id,
           class_name: g.class_name,
-          class_code: g.class_code,
+          class_code: codeMap.get(g.id) || null,
           member_count: counts.get(g.id) || 0,
         }))
       );
